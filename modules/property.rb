@@ -49,7 +49,7 @@ class Property
 
 
   #OR
-  # def Property.find_by_id(id)
+  # def self.find_by_id(id)
   #   db = PG.connect({dbname: 'property_tracker', host: 'localhost'})
   #   sql = "SELECT * FROM properties
   #          WHERE id = $1"
@@ -75,7 +75,7 @@ class Property
   end
 
   #OR
-  # def Property.find_by_address(address)
+  # def self.find_by_address(address)
   #   db = PG.connect({dbname: 'property_tracker', host: 'localhost'})
   #   sql = "SELECT * FROM properties
   #          WHERE address = $1"
@@ -86,31 +86,16 @@ class Property
   #   return properties.map {|property| Property.new(property)}[0]
   # end
 
-  def Property.find_by_status(status)
+  def self.find_by_status(status)
     db = PG.connect({dbname: 'property_tracker', host: 'localhost'})
     sql = "SELECT * FROM properties
            WHERE status = $1"
     values = [status]
     db.prepare("find_by_status", sql)
-    properties_array = db.exec_prepared("find_by_status", values)
+    properties = db.exec_prepared("find_by_status", values)
     db.close()
-    return nil if properties_array.first() == nil
-    properties_hash = properties_array[0]
-    found_property = Property.new(properties_hash)
-    return found_property
+    return properties.map {|property| Property.new(property)}
   end
-
-  #OR
-  # def Property.find_by_status(status)
-  #   db = PG.connect({dbname: 'property_tracker', host: 'localhost'})
-  #   sql = "SELECT * FROM properties
-  #          WHERE status = $1"
-  #   values = [status]
-  #   db.prepare("find_by_status", sql)
-  #   properties = db.exec_prepared("find_by_status", values)
-  #   db.close()
-  #   return properties.map {|property| Property.new(property)}[0]
-  # end
 
   def Property.find_by_value_range(value1, value2)
     db = PG.connect({dbname: 'property_tracker', host: 'localhost'})
